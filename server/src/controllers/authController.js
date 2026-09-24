@@ -87,3 +87,19 @@ export const login = async (req, res) => {
     });
   }
 };
+
+// @desc    Get current logged in user
+// @route   GET /api/auth/me
+export const getMe = async (req, res) => {
+  try {
+    res.status(200).json({
+      success: true,
+      user: req.user,
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
