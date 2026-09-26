@@ -185,3 +185,53 @@ export const deleteLink = async (req, res) => {
     });
   }
 };
+
+// @desc    Reorder links
+// @route   PUT /api/links/reorder
+// @access  Private
+export const reorderLinks = async (req, res) => {
+  try {
+    const { orderedIds } = req.body;
+
+    // orderedIds should be an array of link IDs in the new order
+    // Example: ["id1", "id2", "id3"]
+
+    if (!Array.isArray(orderedIds) || orderedIds.length === 0) {
+      return res.status(400).json({
+        success: false,
+        message: "orderedIds must be a non-empty array",
+      });
+    }
+
+    // Update order for each link
+    const bulkOps = orderedIds.map((id, index) => ({
+      updateOne: {
+        filter: {
+          _id: id,
+          user: req.user._id,
+          isDeleted: false,
+        },
+        update: { order: index },
+      },
+    }));
+
+    await Link.bulkWrite(bulkOps);
+
+    // Return updated links
+    const links = await Link.find({
+      user: req.user._id,
+      isDeleted: false,
+    }).sort("order");
+
+    res.status(200).json({
+      success: true,
+      message: "Links reordered successfully",
+      links,
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};

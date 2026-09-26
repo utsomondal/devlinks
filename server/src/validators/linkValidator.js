@@ -61,3 +61,9 @@ export const updateLinkSchema = z.discriminatedUnion("type", [
     url: urlSchema.optional(),
   }),
 ]);
+
+export const reorderLinksSchema = z.object({
+  orderedIds: z
+    .array(z.string().min(1))
+    .min(1, "At least one link ID is required"),
+});
