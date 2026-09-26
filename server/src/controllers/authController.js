@@ -1,13 +1,39 @@
 import User from "../models/User.js";
 import generateToken from "../utils/generateToken.js";
 
+const sendTokenResponse = (user, statusCode, res, message) => {
+  const token = generateToken(user._id, user.role);
+
+  const options = {
+    expires: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
+    httpOnly: true,
+    secure: process.env.NODE_ENV === "production",
+    sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
+  };
+
+  res
+    .status(statusCode)
+    .cookie("token", token, options)
+    .json({
+      success: true,
+      message,
+      token,
+      user: {
+        id: user._id,
+        name: user.name,
+        username: user.username,
+        email: user.email,
+        role: user.role,
+      },
+    });
+};
+
 // @desc    Register new user
 // @route   POST /api/auth/register
 export const register = async (req, res) => {
   try {
     const { name, username, email, password } = req.body;
 
-    // Check if user already exists
     const existingUser = await User.findOne({
       $or: [{ email }, { username }],
     });
@@ -26,20 +52,7 @@ export const register = async (req, res) => {
       password,
     });
 
-    const token = generateToken(user._id, user.role);
-
-    res.status(201).json({
-      success: true,
-      message: "User registered successfully",
-      token,
-      user: {
-        id: user._id,
-        name: user.name,
-        username: user.username,
-        email: user.email,
-        role: user.role,
-      },
-    });
+    sendTokenResponse(user, 201, res, "User registered successfully");
   } catch (error) {
     res.status(500).json({
       success: false,
@@ -54,7 +67,6 @@ export const login = async (req, res) => {
   try {
     const { email, password } = req.body;
 
-    // Since password has select:false, we need to explicitly select it
     const user = await User.findOne({ email, isDeleted: false }).select(
       "+password",
     );
@@ -66,20 +78,7 @@ export const login = async (req, res) => {
       });
     }
 
-    const token = generateToken(user._id, user.role);
-
-    res.status(200).json({
-      success: true,
-      message: "Login successful",
-      token,
-      user: {
-        id: user._id,
-        name: user.name,
-        username: user.username,
-        email: user.email,
-        role: user.role,
-      },
-    });
+    sendTokenResponse(user, 200, res, "Login successful");
   } catch (error) {
     res.status(500).json({
       success: false,
@@ -108,28 +107,26 @@ export const getMe = async (req, res) => {
 // @route   POST /api/auth/guest
 export const guestLogin = async (req, res) => {
   try {
-    const { role } = req.body; // Expected values: "user" or "admin"
+    const { role = "user" } = req.body || {};
 
-    if (!role || !["user", "admin"].includes(role)) {
+    if (!["user", "admin"].includes(role)) {
       return res.status(400).json({
         success: false,
         message: "Role must be 'user' or 'admin'",
       });
     }
 
-    // Find the demo account for the requested role
     let user = await User.findOne({
       email: role === "admin" ? "admin@devlinks.com" : "guest@devlinks.com",
       isDeleted: false,
     });
 
-    // Create the demo account if it does not exist
     if (!user) {
       user = await User.create({
         name: role === "admin" ? "Demo Admin" : "Guest User",
         username: role === "admin" ? "demoadmin" : "guestuser",
         email: role === "admin" ? "admin@devlinks.com" : "guest@devlinks.com",
-        password: "guest123456", // Password will be hashed by the pre-save middleware
+        password: "guest123456",
         role,
         bio:
           role === "admin"
@@ -138,24 +135,26 @@ export const guestLogin = async (req, res) => {
       });
     }
 
-    const token = generateToken(user._id, user.role);
-
-    res.status(200).json({
-      success: true,
-      message: `Logged in as ${role}`,
-      token,
-      user: {
-        id: user._id,
-        name: user.name,
-        username: user.username,
-        email: user.email,
-        role: user.role,
-      },
-    });
+    sendTokenResponse(user, 200, res, `Logged in as ${role}`);
   } catch (error) {
     res.status(500).json({
       success: false,
       message: error.message,
     });
   }
+};
+
+// @desc    Logout user
+// @route   POST /api/auth/logout
+export const logout = async (req, res) => {
+  res.clearCookie("token", {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === "production",
+    sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
+  });
+
+  res.status(200).json({
+    success: true,
+    message: "Logged out successfully",
+  });
 };

@@ -5,8 +5,12 @@ export const protect = async (req, res, next) => {
   try {
     let token;
 
-    // Extract the token from the Authorization header
-    if (
+    // 1. Check HttpOnly cookie first
+    if (req.cookies?.token) {
+      token = req.cookies.token;
+    }
+    // 2. Fallback: Authorization header (Bearer token)
+    else if (
       req.headers.authorization &&
       req.headers.authorization.startsWith("Bearer")
     ) {
@@ -16,7 +20,7 @@ export const protect = async (req, res, next) => {
     if (!token) {
       return res.status(401).json({
         success: false,
-        message: "Authentication required",
+        message: "Authentication required, no token provided",
       });
     }
 
@@ -48,11 +52,11 @@ export const protect = async (req, res, next) => {
 export const admin = (req, res, next) => {
   // Allow access only to authenticated admin users
   if (req.user && req.user.role === "admin") {
-    next();
-  } else {
-    return res.status(403).json({
-      success: false,
-      message: "Access denied. Insufficient privileges",
-    });
+    return next();
   }
+
+  return res.status(403).json({
+    success: false,
+    message: "Access denied. Insufficient privileges",
+  });
 };
