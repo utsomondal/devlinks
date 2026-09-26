@@ -30,6 +30,6 @@ export const updateProfileSchema = z.object({
     })
     .optional(),
 
-  // Profile image URL (if Cloudinary is used)
+  // Profile image URL
   avatar: z.string().url("Invalid avatar URL").optional(),
 });
