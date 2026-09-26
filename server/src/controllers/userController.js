@@ -1,4 +1,5 @@
 import User from "../models/User.js";
+import cloudinary from "../config/cloudinary.js";
 
 // @desc    Get my profile
 // @route   GET /api/users/me
@@ -64,6 +65,53 @@ export const updateMyProfile = async (req, res) => {
     res.status(500).json({
       success: false,
       message: error.message,
+    });
+  }
+};
+
+// @desc    Upload profile picture
+// @route   PUT /api/users/me/avatar
+// @access  Private
+export const uploadProfilePicture = async (req, res) => {
+  try {
+    if (!req.file) {
+      return res.status(400).json({
+        success: false,
+        message: "Please upload an image",
+      });
+    }
+
+    // Convert buffer to base64
+    const b64 = Buffer.from(req.file.buffer).toString("base64");
+    const dataURI = `data:${req.file.mimetype};base64,${b64}`;
+
+    // Upload to Cloudinary with Overwrite protection
+    const result = await cloudinary.uploader.upload(dataURI, {
+      folder: "devlinks/profiles",
+      public_id: `user_${req.user._id}`,
+      overwrite: true,
+      invalidate: true,
+      width: 400,
+      height: 400,
+      crop: "fill",
+    });
+
+    // Update user in DB
+    const user = await User.findByIdAndUpdate(
+      req.user._id,
+      { profilePicture: result.secure_url },
+      { returnDocument: "after", runValidators: true },
+    ).select("-password");
+
+    res.status(200).json({
+      success: true,
+      message: "Profile picture uploaded successfully",
+      profilePicture: user.profilePicture,
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: error.message || "Server Error",
     });
   }
 };
