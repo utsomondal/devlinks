@@ -1,12 +1,14 @@
 import express from "express";
-import { register, login,guestLogin, getMe } from "../controllers/authController.js";
+import { register, login, guestLogin, getMe } from "../controllers/authController.js";
 import { protect } from "../middleware/authMiddleware.js";
+import { validate } from "../middleware/validateMiddleware.js";
+import { registerSchema, loginSchema, guestSchema } from "../validators/authValidator.js";
 
 const router = express.Router();
 
-router.post("/register", register);
-router.post("/login", login);
-router.post("/guest",guestLogin);
+router.post("/register", validate(registerSchema), register);
+router.post("/login", validate(loginSchema), login);
+router.post("/guest", validate(guestSchema), guestLogin);
 router.get("/me", protect, getMe);
 
 export default router;

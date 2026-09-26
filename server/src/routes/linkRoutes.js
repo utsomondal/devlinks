@@ -6,12 +6,21 @@ import {
   deleteLink,
 } from "../controllers/linkController.js";
 import { protect } from "../middleware/authMiddleware.js";
+import { validate } from "../middleware/validateMiddleware.js";
+import {
+  createLinkSchema,
+  updateLinkSchema,
+} from "../validators/linkValidator.js";
 
 const router = express.Router();
 
-router.use(protect); // All routes after this middleware will require authentication
+router.use(protect);
 
-router.route("/").post(createLink).get(getMyLinks);
-router.route("/:id").put(updateLink).delete(deleteLink);
+router.route("/").post(validate(createLinkSchema), createLink).get(getMyLinks);
+
+router
+  .route("/:id")
+  .put(validate(updateLinkSchema), updateLink)
+  .delete(deleteLink);
 
 export default router;
