@@ -7,6 +7,7 @@ import authRoutes from "./routes/authRoutes.js";
 import linkRoutes from "./routes/linkRoutes.js";
 import publicRoutes from "./routes/publicRoutes.js";
 import userRoutes from "./routes/userRoutes.js";
+import adminRoutes from "./routes/adminRoutes.js";
 
 const app = express();
 
@@ -35,6 +36,7 @@ app.use("/api/auth", authRoutes);
 app.use("/api/links", linkRoutes);
 app.use("/api/public", publicRoutes);
 app.use("/api/users", userRoutes);
+app.use("/api/admin", adminRoutes);
 
 // Test Route
 app.get("/", (req, res) => {
