@@ -1,7 +1,8 @@
 import { Navigate } from "react-router";
 import { useAuth } from "../../hooks/useAuth";
+import Home from "../../pages/Home";
 
-const ProtectedRoute = ({ children, adminOnly = false }) => {
+const HomeRedirect = () => {
   const { user, loading } = useAuth();
 
   if (loading) {
@@ -12,15 +13,11 @@ const ProtectedRoute = ({ children, adminOnly = false }) => {
     );
   }
 
-  if (!user) {
-    return <Navigate to="/" replace />;
-  }
-
-  if (adminOnly && user.role !== "admin") {
+  if (user) {
     return <Navigate to="/dashboard" replace />;
   }
 
-  return children;
+  return <Home />;
 };
 
-export default ProtectedRoute;
+export default HomeRedirect;

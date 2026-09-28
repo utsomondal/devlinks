@@ -1,7 +1,7 @@
 import { Navigate } from "react-router";
 import { useAuth } from "../../hooks/useAuth";
 
-const ProtectedRoute = ({ children, adminOnly = false }) => {
+const GuestRoute = ({ children }) => {
   const { user, loading } = useAuth();
 
   if (loading) {
@@ -12,15 +12,12 @@ const ProtectedRoute = ({ children, adminOnly = false }) => {
     );
   }
 
-  if (!user) {
-    return <Navigate to="/" replace />;
-  }
-
-  if (adminOnly && user.role !== "admin") {
+  if (user) {
+    // logged in → dashboard (admin ও user দুটোই)
     return <Navigate to="/dashboard" replace />;
   }
 
   return children;
 };
 
-export default ProtectedRoute;
+export default GuestRoute;
