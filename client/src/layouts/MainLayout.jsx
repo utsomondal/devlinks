@@ -11,9 +11,11 @@ export default function MainLayout() {
   }
 
   return (
-    <div className="flex min-h-screen flex-col">
-      <Navbar />
-      <main className="flex-1">
+    <div className="flex h-dvh flex-col overflow-hidden bg-base-100">
+      <div className="px-4 sm:px-8 lg:px-12 max-w-7xl mx-auto w-full">
+        <Navbar />
+      </div>
+      <main className="flex min-h-0 flex-1 flex-col overflow-hidden">
         <Outlet />
       </main>
       <Footer />

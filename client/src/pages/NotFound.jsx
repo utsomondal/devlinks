@@ -22,14 +22,14 @@ const item = {
 export default function NotFound() {
   return (
     <div className="relative h-dvh w-full overflow-hidden bg-base-100">
-      {/* Ambient background — Home page aesthetic with error accent */}
+      {/* Ambient background - Home page aesthetic with error accent */}
       <div className="pointer-events-none absolute inset-0 overflow-hidden">
         <div className="absolute -left-1/4 top-0 h-[60%] w-[60%] rounded-full bg-primary/10 blur-3xl" />
         <div className="absolute -right-1/4 bottom-0 h-[50%] w-[50%] rounded-full bg-secondary/10 blur-3xl" />
         <div className="absolute left-1/2 top-1/2 h-40 w-40 -translate-x-1/2 -translate-y-1/2 rounded-full bg-error/10 blur-2xl" />
       </div>
 
-      {/* Content — flex column, fits viewport */}
+      {/* Content - flex column, fits viewport */}
       <div className="relative z-10 flex h-full flex-col px-4 sm:px-6 lg:px-8">
         {/* Top bar */}
         <motion.header
@@ -68,7 +68,7 @@ export default function NotFound() {
           <motion.div variants={item}>
             <span className="inline-flex items-center gap-1.5 rounded-full border border-error/20 bg-error/10 px-3 py-1 text-xs font-medium text-error backdrop-blur-sm sm:text-sm">
               <AlertCircle className="h-3.5 w-3.5" />
-               Error 404 — Page Not Found
+              Error 404 - Page Not Found
             </span>
           </motion.div>
 
@@ -86,7 +86,8 @@ export default function NotFound() {
               Lost in space?
             </h2>
             <p className="mx-auto max-w-md text-sm text-base-content/70 sm:text-base">
-              The page you are looking for doesn't exist, was removed, or had its URL changed.
+              The page you are looking for doesn't exist, was removed, or had
+              its URL changed.
             </p>
           </motion.div>
 
