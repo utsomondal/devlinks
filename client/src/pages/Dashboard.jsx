@@ -27,7 +27,7 @@ const Dashboard = () => {
           </div>
           <h1 className="text-3xl font-black tracking-tight sm:text-4xl">
             Welcome back,{" "}
-            <span className="bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
+            <span className="bg-linear-to-r from-primary to-secondary bg-clip-text text-transparent">
               {firstName}
             </span>
           </h1>

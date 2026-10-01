@@ -8,19 +8,25 @@ const api = axios.create({
   },
 });
 
-// Handle 401 globally (session expired / not logged in)
 api.interceptors.response.use(
   (response) => response,
   (error) => {
     if (error.response?.status === 401) {
-      // Optional: redirect only if not already on public pages
-      const publicPaths = ["/login", "/register", "/"];
-      if (!publicPaths.includes(window.location.pathname)) {
+      const path = window.location.pathname;
+
+      // Public pages — do NOT force login redirect
+      const isPublic =
+        path === "/" ||
+        path === "/login" ||
+        path === "/register" ||
+        path.startsWith("/u/");
+
+      if (!isPublic) {
         window.location.href = "/login";
       }
     }
     return Promise.reject(error);
-  },
+  }
 );
 
 export default api;
