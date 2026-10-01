@@ -6,7 +6,7 @@ import { useAuth } from "../../hooks/useAuth";
 import { updateMyProfile, uploadAvatar } from "../../services/userService";
 
 const ProfileSection = ({ onProfileUpdate }) => {
-  const { user } = useAuth();
+  const { user, setUser } = useAuth();
 
   const [name, setName] = useState(() => user?.name || "");
   const [bio, setBio] = useState(() => user?.bio || "");
@@ -23,18 +23,11 @@ const ProfileSection = ({ onProfileUpdate }) => {
     const file = e.target.files?.[0];
     if (!file) return;
 
-    if (!file.type.startsWith("image/")) {
-      toast.error("Please select an image file");
-      return;
-    }
-
-    // Local preview
-    setAvatarPreview(URL.createObjectURL(file));
     setUploading(true);
-
     try {
       const url = await uploadAvatar(file);
       setAvatarPreview(url);
+      setUser((prev) => ({ ...prev, profilePicture: url }));
       toast.success("Avatar updated");
       onProfileUpdate?.();
     } catch (err) {
@@ -54,7 +47,8 @@ const ProfileSection = ({ onProfileUpdate }) => {
         .map((s) => s.trim())
         .filter(Boolean);
 
-      await updateMyProfile({ name, bio, skills });
+      const updated = await updateMyProfile({ name, bio, skills });
+      setUser((prev) => ({ ...prev, ...updated }));
       toast.success("Profile saved");
       onProfileUpdate?.();
     } catch (err) {
@@ -108,9 +102,7 @@ const ProfileSection = ({ onProfileUpdate }) => {
           </div>
 
           <div className="text-sm text-base-content/50">
-            <p className="font-medium text-base-content">
-              @{user?.username}
-            </p>
+            <p className="font-medium text-base-content">@{user?.username}</p>
             <p className="text-xs">JPG, PNG · Max 5MB</p>
           </div>
         </div>

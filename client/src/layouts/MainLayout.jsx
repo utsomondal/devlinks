@@ -11,13 +11,16 @@ export default function MainLayout() {
   }
 
   return (
-    <div className="flex h-dvh flex-col overflow-hidden bg-base-100">
-      <div className="px-4 sm:px-8 lg:px-12 max-w-7xl mx-auto w-full">
+    <div className="flex min-h-dvh flex-col bg-base-100">
+      <div className="w-full max-w-7xl mx-auto px-4 sm:px-8 lg:px-12">
         <Navbar />
       </div>
-      <main className="flex min-h-0 flex-1 flex-col overflow-hidden">
+
+      {/* ONLY main scrolls */}
+      <main className="min-h-0 flex-1 overflow-y-auto">
         <Outlet />
       </main>
+
       <Footer />
     </div>
   );
