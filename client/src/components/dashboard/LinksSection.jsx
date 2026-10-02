@@ -2,8 +2,25 @@ import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { Plus, Loader2, Link as LinkIcon } from "lucide-react";
 import toast from "react-hot-toast";
+import {
+  DndContext,
+  closestCenter,
+  PointerSensor,
+  useSensor,
+  useSensors,
+} from "@dnd-kit/core";
+import {
+  SortableContext,
+  verticalListSortingStrategy,
+  arrayMove,
+} from "@dnd-kit/sortable";
 import LinkItem from "./LinkItem";
-import { getMyLinks, createLink, deleteLink } from "../../services/linkService";
+import {
+  getMyLinks,
+  createLink,
+  deleteLink,
+  reorderLinks,
+} from "../../services/linkService";
 
 const PLATFORMS = [
   "github",
@@ -29,6 +46,10 @@ const LinksSection = ({ onLinksChange }) => {
   const [username, setUsername] = useState("");
   const [title, setTitle] = useState("");
   const [url, setUrl] = useState("");
+
+  const sensors = useSensors(
+    useSensor(PointerSensor, { activationConstraint: { distance: 6 } }),
+  );
 
   const refreshLinks = async () => {
     try {
@@ -105,6 +126,26 @@ const LinksSection = ({ onLinksChange }) => {
       await refreshLinks();
     } catch {
       toast.error("Failed to delete link");
+    }
+  };
+
+  const handleDragEnd = async (event) => {
+    const { active, over } = event;
+    if (!over || active.id === over.id) return;
+
+    const oldIndex = links.findIndex((l) => l._id === active.id);
+    const newIndex = links.findIndex((l) => l._id === over.id);
+    if (oldIndex < 0 || newIndex < 0) return;
+
+    const reordered = arrayMove(links, oldIndex, newIndex);
+    setLinks(reordered);
+    onLinksChange?.(reordered);
+
+    try {
+      await reorderLinks(reordered.map((l) => l._id));
+    } catch {
+      toast.error("Failed to save order");
+      await refreshLinks();
     }
   };
 
@@ -225,11 +266,22 @@ const LinksSection = ({ onLinksChange }) => {
           <p className="text-sm">No links yet. Add your first one.</p>
         </div>
       ) : (
-        <div className="space-y-2">
-          {links.map((link) => (
-            <LinkItem key={link._id} link={link} onDelete={handleDelete} />
-          ))}
-        </div>
+        <DndContext
+          sensors={sensors}
+          collisionDetection={closestCenter}
+          onDragEnd={handleDragEnd}
+        >
+          <SortableContext
+            items={links.map((l) => l._id)}
+            strategy={verticalListSortingStrategy}
+          >
+            <div className="space-y-2">
+              {links.map((link) => (
+                <LinkItem key={link._id} link={link} onDelete={handleDelete} />
+              ))}
+            </div>
+          </SortableContext>
+        </DndContext>
       )}
     </motion.section>
   );
