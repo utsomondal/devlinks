@@ -1,6 +1,12 @@
 import User from "../models/User.js";
 import Link from "../models/Link.js";
 
+const isGuestAdmin = (user) =>
+  user.email === "admin@devlinks.com" || user.username === "demoadmin";
+
+const isGuestUserDoc = (user) =>
+  user.email === "guest@devlinks.com" || user.username === "guestuser";
+
 // @desc    Get dashboard stats
 // @route   GET /api/admin/stats
 // @access  Admin
@@ -70,7 +76,7 @@ export const deleteUser = async (req, res) => {
       });
     }
 
-    // Prevent admin from deleting himself
+    // Cannot delete yourself
     if (user._id.toString() === req.user._id.toString()) {
       return res.status(400).json({
         success: false,
@@ -78,14 +84,18 @@ export const deleteUser = async (req, res) => {
       });
     }
 
+    // Guest admin can only ban guest user
+    if (isGuestAdmin(req.user) && !isGuestUserDoc(user)) {
+      return res.status(403).json({
+        success: false,
+        message: "Demo admin can only moderate the guest user account",
+      });
+    }
+
     user.isDeleted = true;
     await user.save();
 
-    // Also soft delete all links of that user
-    await Link.updateMany(
-      { user: user._id },
-      { isDeleted: true }
-    );
+    await Link.updateMany({ user: user._id }, { isDeleted: true });
 
     res.status(200).json({
       success: true,
@@ -126,13 +136,27 @@ export const getAllLinks = async (req, res) => {
 // @access  Admin
 export const deleteLink = async (req, res) => {
   try {
-    const link = await Link.findById(req.params.id);
+    const link = await Link.findById(req.params.id).populate(
+      "user",
+      "email username"
+    );
 
     if (!link || link.isDeleted) {
       return res.status(404).json({
         success: false,
         message: "Link not found",
       });
+    }
+
+    // Guest admin can only delete guest user's links
+    if (isGuestAdmin(req.user)) {
+      const owner = link.user;
+      if (!owner || !isGuestUserDoc(owner)) {
+        return res.status(403).json({
+          success: false,
+          message: "Demo admin can only moderate guest user links",
+        });
+      }
     }
 
     link.isDeleted = true;

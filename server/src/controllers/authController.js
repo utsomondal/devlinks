@@ -107,25 +107,36 @@ export const getMe = async (req, res) => {
 // @route   POST /api/auth/guest
 export const guestLogin = async (req, res) => {
   try {
-    const { role = "user" } = req.body || {};
+    const { role } = req.body;
 
-    if (!["user", "admin"].includes(role)) {
+    if (!role || !["user", "admin"].includes(role)) {
       return res.status(400).json({
         success: false,
         message: "Role must be 'user' or 'admin'",
       });
     }
 
-    let user = await User.findOne({
-      email: role === "admin" ? "admin@devlinks.com" : "guest@devlinks.com",
-      isDeleted: false,
-    });
+    const email =
+      role === "admin" ? "admin@devlinks.com" : "guest@devlinks.com";
+    const username = role === "admin" ? "demoadmin" : "guestuser";
+    const name = role === "admin" ? "Demo Admin" : "Guest User";
 
-    if (!user) {
+    // Find even if soft-deleted
+    let user = await User.findOne({ email });
+
+    if (user) {
+      // Restore if soft-deleted
+      if (user.isDeleted) {
+        user.isDeleted = false;
+        user.role = role;
+        await user.save();
+      }
+    } else {
+      // Create only if truly does not exist
       user = await User.create({
-        name: role === "admin" ? "Demo Admin" : "Guest User",
-        username: role === "admin" ? "demoadmin" : "guestuser",
-        email: role === "admin" ? "admin@devlinks.com" : "guest@devlinks.com",
+        name,
+        username,
+        email,
         password: "guest123456",
         role,
         bio:
@@ -135,6 +146,7 @@ export const guestLogin = async (req, res) => {
       });
     }
 
+    // use your existing sendTokenResponse / token logic here
     sendTokenResponse(user, 200, res, `Logged in as ${role}`);
   } catch (error) {
     res.status(500).json({
