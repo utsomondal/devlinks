@@ -13,8 +13,9 @@ const GuestRoute = ({ children }) => {
   }
 
   if (user) {
-    // logged in → dashboard (admin ও user দুটোই)
-    return <Navigate to="/dashboard" replace />;
+    return (
+      <Navigate to={user.role === "admin" ? "/admin" : "/dashboard"} replace />
+    );
   }
 
   return children;

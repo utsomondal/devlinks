@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
 import { Sparkles, ExternalLink } from "lucide-react";
-import { Link } from "react-router";
+import { Link, Navigate } from "react-router";
 import { useAuth } from "../hooks/useAuth";
 import ProfileSection from "../components/dashboard/ProfileSection";
 import LinksSection from "../components/dashboard/LinksSection";
@@ -12,6 +12,9 @@ const Dashboard = () => {
   const [links, setLinks] = useState([]);
   const firstName = user?.name?.split(" ")[0] || "Developer";
 
+  if (user?.role === "admin") {
+    return <Navigate to="/admin" replace />;
+  }
   return (
     <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
       {/* header — same as before */}

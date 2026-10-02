@@ -35,9 +35,9 @@ export default function Navbar() {
       transition={{ type: "spring", stiffness: 100, damping: 20 }}
       className="relative z-50 flex w-full shrink-0 items-center justify-between border-b border-base-300/40 bg-base-100/80 px-4 py-3 backdrop-blur-md sm:px-6"
     >
-      {/* Brand Logo */}
+      {/* Brand */}
       <Link
-        to={user ? "/dashboard" : "/"}
+        to={user ? (isAdmin ? "/admin" : "/dashboard") : "/"}
         className="group flex items-center gap-2.5"
       >
         <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-linear-to-tr from-primary to-secondary text-primary-content shadow-lg shadow-primary/25 transition-transform duration-300 group-hover:scale-105 sm:h-10 sm:w-10">
@@ -51,15 +51,18 @@ export default function Navbar() {
       <div className="flex items-center gap-2 sm:gap-3">
         {user ? (
           <>
-            {/* Nav Quick Links */}
-            <Link
-              to="/dashboard"
-              className="btn btn-ghost btn-sm hidden gap-2 rounded-xl px-3.5 font-semibold sm:inline-flex hover:bg-base-200/60"
-            >
-              <LayoutDashboard className="h-4 w-4 text-primary" />
-              Dashboard
-            </Link>
+            {/* Desktop: User only */}
+            {!isAdmin && (
+              <Link
+                to="/dashboard"
+                className="btn btn-ghost btn-sm hidden gap-2 rounded-xl px-3.5 font-semibold sm:inline-flex hover:bg-base-200/60"
+              >
+                <LayoutDashboard className="h-4 w-4 text-primary" />
+                Dashboard
+              </Link>
+            )}
 
+            {/* Desktop: Admin only */}
             {isAdmin && (
               <Link
                 to="/admin"
@@ -70,7 +73,7 @@ export default function Navbar() {
               </Link>
             )}
 
-            {/* Premium Avatar Dropdown Menu */}
+            {/* Avatar dropdown */}
             <div className="dropdown dropdown-end">
               <div
                 tabIndex={0}
@@ -92,12 +95,11 @@ export default function Navbar() {
                 </div>
               </div>
 
-              {/* Enhanced Dropdown Menu */}
               <ul
                 tabIndex={0}
-                className="menu dropdown-content z-60 mt-3 w-64 rounded-2xl border border-base-300/80 bg-base-100/95 p-2 shadow-2xl backdrop-blur-xl space-y-1"
+                className="menu dropdown-content z-60 mt-3 w-64 space-y-1 rounded-2xl border border-base-300/80 bg-base-100/95 p-2 shadow-2xl backdrop-blur-xl"
               >
-                {/* User Header Profile Card */}
+                {/* Profile header */}
                 <li className="menu-title p-0">
                   <div className="flex items-center gap-3 rounded-xl bg-base-200/50 p-3">
                     <div className="avatar">
@@ -105,14 +107,14 @@ export default function Navbar() {
                         {avatarUrl ? (
                           <img src={avatarUrl} alt={displayName} />
                         ) : (
-                          <div className="flex h-full w-full items-center justify-center bg-primary/20 text-primary font-bold">
+                          <div className="flex h-full w-full items-center justify-center bg-primary/20 text-sm font-bold text-primary">
                             {displayName.charAt(0).toUpperCase()}
                           </div>
                         )}
                       </div>
                     </div>
-                    <div className="flex flex-col min-w-0 flex-1">
-                      <span className="truncate font-bold text-sm text-base-content">
+                    <div className="flex min-w-0 flex-1 flex-col">
+                      <span className="truncate text-sm font-bold text-base-content">
                         {displayName}
                       </span>
                       {user.username ? (
@@ -130,22 +132,25 @@ export default function Navbar() {
 
                 <div className="my-1 h-px bg-base-200" />
 
-                {/* Navigation Items */}
-                <li>
-                  <Link
-                    to="/dashboard"
-                    className="flex items-center gap-2.5 rounded-xl py-2.5 px-3 text-xs font-semibold text-base-content/80 hover:bg-primary/10 hover:text-primary transition-all"
-                  >
-                    <LayoutDashboard className="h-4 w-4" />
-                    Dashboard
-                  </Link>
-                </li>
+                {/* User menu */}
+                {!isAdmin && (
+                  <li>
+                    <Link
+                      to="/dashboard"
+                      className="flex items-center gap-2.5 rounded-xl px-3 py-2.5 text-xs font-semibold text-base-content/80 transition-all hover:bg-primary/10 hover:text-primary"
+                    >
+                      <LayoutDashboard className="h-4 w-4" />
+                      Dashboard
+                    </Link>
+                  </li>
+                )}
 
+                {/* Admin menu */}
                 {isAdmin && (
                   <li>
                     <Link
                       to="/admin"
-                      className="flex items-center gap-2.5 rounded-xl py-2.5 px-3 text-xs font-semibold text-base-content/80 hover:bg-secondary/10 hover:text-secondary transition-all"
+                      className="flex items-center gap-2.5 rounded-xl px-3 py-2.5 text-xs font-semibold text-base-content/80 transition-all hover:bg-secondary/10 hover:text-secondary"
                     >
                       <Shield className="h-4 w-4" />
                       Admin Control Panel
@@ -153,11 +158,12 @@ export default function Navbar() {
                   </li>
                 )}
 
-                {user.username && (
+                {/* Public profile — users only */}
+                {!isAdmin && user.username && (
                   <li>
                     <Link
                       to={`/u/${user.username}`}
-                      className="flex items-center gap-2.5 rounded-xl py-2.5 px-3 text-xs font-semibold text-base-content/80 hover:bg-primary/10 hover:text-primary transition-all"
+                      className="flex items-center gap-2.5 rounded-xl px-3 py-2.5 text-xs font-semibold text-base-content/80 transition-all hover:bg-primary/10 hover:text-primary"
                     >
                       <ExternalLink className="h-4 w-4" />
                       Public Profile
@@ -167,12 +173,11 @@ export default function Navbar() {
 
                 <div className="my-1 h-px bg-base-200" />
 
-                {/* Logout Button */}
                 <li>
                   <button
                     type="button"
                     onClick={handleLogout}
-                    className="flex items-center gap-2.5 rounded-xl py-2.5 px-3 text-xs font-semibold text-error hover:bg-error/10 transition-all"
+                    className="flex items-center gap-2.5 rounded-xl px-3 py-2.5 text-xs font-semibold text-error transition-all hover:bg-error/10"
                   >
                     <LogOut className="h-4 w-4" />
                     Sign out
@@ -185,14 +190,14 @@ export default function Navbar() {
           <>
             <Link
               to="/login"
-              className="btn btn-ghost btn-sm px-3.5 font-semibold text-xs sm:text-sm"
+              className="btn btn-ghost btn-sm px-3.5 text-xs font-semibold sm:text-sm"
             >
               Log in
             </Link>
             <motion.div whileHover={{ scale: 1.04 }} whileTap={{ scale: 0.96 }}>
               <Link
                 to="/register"
-                className="btn btn-primary btn-sm px-4 font-semibold text-xs sm:text-sm shadow-md shadow-primary/25 rounded-xl"
+                className="btn btn-primary btn-sm rounded-xl px-4 text-xs font-semibold shadow-md shadow-primary/25 sm:text-sm"
               >
                 Sign up
               </Link>
