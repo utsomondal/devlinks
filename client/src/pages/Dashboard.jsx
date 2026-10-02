@@ -7,6 +7,7 @@ import ProfileSection from "../components/dashboard/ProfileSection";
 import LinksSection from "../components/dashboard/LinksSection";
 import LivePreview from "../components/dashboard/LivePreview";
 import DashboardStats from "../components/dashboard/DashboardStats";
+import SharePanel from "../components/dashboard/SharePanel";
 
 const Dashboard = () => {
   const { user } = useAuth();
@@ -62,8 +63,9 @@ const Dashboard = () => {
           <LinksSection onLinksChange={setLinks} />
         </div>
 
-        <aside className="lg:sticky lg:top-24 lg:self-start">
+        <aside className="lg:sticky lg:top-24 lg:self-start space-y-5">
           <LivePreview user={user} links={links} />
+          <SharePanel username={user?.username} />
         </aside>
       </div>
     </div>
