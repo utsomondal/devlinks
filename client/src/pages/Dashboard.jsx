@@ -6,6 +6,7 @@ import { useAuth } from "../hooks/useAuth";
 import ProfileSection from "../components/dashboard/ProfileSection";
 import LinksSection from "../components/dashboard/LinksSection";
 import LivePreview from "../components/dashboard/LivePreview";
+import DashboardStats from "../components/dashboard/DashboardStats";
 
 const Dashboard = () => {
   const { user } = useAuth();
@@ -15,9 +16,9 @@ const Dashboard = () => {
   if (user?.role === "admin") {
     return <Navigate to="/admin" replace />;
   }
+
   return (
     <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
-      {/* header — same as before */}
       <motion.div
         initial={{ opacity: 0, y: 12 }}
         animate={{ opacity: 1, y: 0 }}
@@ -53,6 +54,10 @@ const Dashboard = () => {
 
       <div className="grid items-start gap-6 lg:grid-cols-[1fr_340px] xl:grid-cols-[1fr_380px]">
         <div className="min-w-0 space-y-6 pb-10">
+          <DashboardStats
+            links={links}
+            profileViews={user?.profileViews ?? 0}
+          />
           <ProfileSection />
           <LinksSection onLinksChange={setLinks} />
         </div>
