@@ -46,21 +46,32 @@ export const createLinkSchema = z.discriminatedUnion("type", [
 ]);
 
 // UPDATE LINK SCHEMA
-export const updateLinkSchema = z.discriminatedUnion("type", [
-  // Updating a Platform Link
-  z.object({
-    type: z.literal("platform"),
-    platform: platformEnum.optional(),
-    username: z.string().trim().min(1).max(50).optional(),
-  }),
-
-  // Updating a Portfolio Link
-  z.object({
-    type: z.literal("portfolio"),
-    title: z.string().trim().min(1).max(50).optional(),
-    url: urlSchema.optional(),
-  }),
-]);
+export const updateLinkSchema = z.object({
+  platform: z
+    .enum([
+      "github",
+      "linkedin",
+      "twitter",
+      "instagram",
+      "facebook",
+      "youtube",
+      "codepen",
+      "stackoverflow",
+      "medium",
+      "devto",
+    ])
+    .optional(),
+  username: z.string().trim().min(1).max(50).optional(),
+  title: z.string().trim().min(1).max(50).optional(),
+  url: z
+    .string()
+    .trim()
+    .refine(
+      (val) => !val || val.startsWith("http://") || val.startsWith("https://"),
+      { message: "URL must start with http:// or https://" }
+    )
+    .optional(),
+});
 
 export const reorderLinksSchema = z.object({
   orderedIds: z
