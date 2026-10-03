@@ -1,4 +1,3 @@
-```md
 # DevLinks
 
 **One link for everything a developer ships.**
@@ -118,7 +117,6 @@ A deployable full-stack app with a public profile page, analytics counters, an a
                                                  │  MongoDB Atlas  │
                                                  │  Cloudinary     │
                                                  └─────────────────┘
-```
 
 **Request flow**
 
