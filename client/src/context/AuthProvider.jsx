@@ -7,6 +7,12 @@ export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
 
+  const fetchFullUser = async () => {
+    const res = await api.get("/auth/me");
+    setUser(res.data.user);
+    return res.data.user;
+  };
+
   useEffect(() => {
     api
       .get("/auth/me")
@@ -16,24 +22,24 @@ export const AuthProvider = ({ children }) => {
   }, []);
 
   const login = async (email, password) => {
-    const res = await api.post("/auth/login", { email, password });
-    setUser(res.data.user);
+    await api.post("/auth/login", { email, password });
+    const fullUser = await fetchFullUser();
     toast.success("Logged in successfully");
-    return res.data.user;
+    return fullUser;
   };
 
   const register = async (data) => {
-    const res = await api.post("/auth/register", data);
-    setUser(res.data.user);
+    await api.post("/auth/register", data);
+    const fullUser = await fetchFullUser();
     toast.success("Account created successfully");
-    return res.data.user;
+    return fullUser;
   };
 
   const guestLogin = async (role = "user") => {
-    const res = await api.post("/auth/guest", { role });
-    setUser(res.data.user);
+    await api.post("/auth/guest", { role });
+    const fullUser = await fetchFullUser();
     toast.success(`Logged in as ${role}`);
-    return res.data.user;
+    return fullUser;
   };
 
   const logout = async () => {
