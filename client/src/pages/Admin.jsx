@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
-import { Loader2, Shield } from "lucide-react";
+import { Shield } from "lucide-react";
 import toast from "react-hot-toast";
 import { useAuth } from "../hooks/useAuth";
 import StatsCards from "../components/admin/StatsCards";
@@ -74,8 +74,14 @@ const Admin = () => {
 
   if (loading) {
     return (
-      <div className="flex min-h-[50vh] items-center justify-center">
-        <Loader2 className="h-8 w-8 animate-spin text-primary" />
+      <div className="mx-auto max-w-6xl space-y-6 px-4 py-8">
+        <div className="skeleton h-10 w-48 rounded-lg" />
+        <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
+          {[1, 2, 3, 4].map((i) => (
+            <div key={i} className="skeleton h-24 rounded-2xl" />
+          ))}
+        </div>
+        <div className="skeleton h-64 w-full rounded-3xl" />
       </div>
     );
   }

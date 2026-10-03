@@ -10,6 +10,7 @@ import {
   Sparkles,
 } from "lucide-react";
 import { useAuth } from "../../hooks/useAuth";
+import ThemeToggle from "./ThemeToggle";
 
 export default function Navbar() {
   const navigate = useNavigate();
@@ -49,6 +50,7 @@ export default function Navbar() {
       </Link>
 
       <div className="flex items-center gap-2 sm:gap-3">
+        <ThemeToggle />
         {user ? (
           <>
             {/* Desktop: User only */}

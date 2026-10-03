@@ -22,6 +22,7 @@ import {
   updateLink,
   reorderLinks,
 } from "../../services/linkService";
+import { LinksListSkeleton } from "../common/Skeleton";
 
 const PLATFORMS = [
   "github",
@@ -269,9 +270,7 @@ const LinksSection = ({ onLinksChange }) => {
       )}
 
       {loading ? (
-        <div className="flex justify-center py-8">
-          <Loader2 className="h-6 w-6 animate-spin text-primary" />
-        </div>
+        <LinksListSkeleton />
       ) : links.length === 0 ? (
         <div className="flex flex-col items-center gap-2 py-8 text-center text-base-content/40">
           <LinkIcon className="h-8 w-8 opacity-40" />
