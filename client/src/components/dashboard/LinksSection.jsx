@@ -19,6 +19,7 @@ import {
   getMyLinks,
   createLink,
   deleteLink,
+  updateLink,
   reorderLinks,
 } from "../../services/linkService";
 
@@ -126,6 +127,17 @@ const LinksSection = ({ onLinksChange }) => {
       await refreshLinks();
     } catch {
       toast.error("Failed to delete link");
+    }
+  };
+
+  const handleUpdate = async (id, data) => {
+    try {
+      await updateLink(id, data);
+      toast.success("Link updated");
+      await refreshLinks();
+    } catch (err) {
+      toast.error(err.response?.data?.message || "Update failed");
+      throw err;
     }
   };
 
@@ -277,7 +289,12 @@ const LinksSection = ({ onLinksChange }) => {
           >
             <div className="space-y-2">
               {links.map((link) => (
-                <LinkItem key={link._id} link={link} onDelete={handleDelete} />
+                <LinkItem
+                  key={link._id}
+                  link={link}
+                  onDelete={handleDelete}
+                  onUpdate={handleUpdate}
+                />
               ))}
             </div>
           </SortableContext>
