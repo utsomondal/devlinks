@@ -4,10 +4,8 @@
 
 DevLinks is a production-style **MERN** bio-link platform built for developers — not generic creators. Manage GitHub, LinkedIn, portfolio links, and skills from one dashboard, then share a single public URL.
 
-| | |
-|---|---|
-| **Live App** | [DevLinks](https://devlinks-bd.vercel.app) |
-| **Stack** | React · Express · MongoDB · JWT · Cloudinary |
+**Live App:** [DevLinks](https://devlinks-bd.vercel.app) <br>
+**Stack:** React · Express · MongoDB · JWT · Cloudinary
 
 ---
 
