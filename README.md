@@ -6,8 +6,7 @@ DevLinks is a production-style **MERN** bio-link platform built for developers �
 
 | | |
 |---|---|
-| **Live App** | [devlinks-bd.vercel.app](https://devlinks-bd.vercel.app) |
-| **API** | [devlinks-o399.onrender.com](https://devlinks-o399.onrender.com) |
+| **Live App** | [DevLinks](https://devlinks-bd.vercel.app) |
 | **Stack** | React · Express · MongoDB · JWT · Cloudinary |
 
 ---
@@ -117,6 +116,7 @@ A deployable full-stack app with a public profile page, analytics counters, an a
                                                  │  MongoDB Atlas  │
                                                  │  Cloudinary     │
                                                  └─────────────────┘
+```
 
 **Request flow**
 
